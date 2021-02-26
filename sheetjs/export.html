@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SheetJS 导出 Excel</title>
+  <style type="text/css">
+    h3 {
+      font-weight: 400;
+      color: #1f2f3d;
+      font-size: 22px;
+    }
+    .demo-block {
+      border: 1px solid #ebebeb;
+      border-radius: 3px;
+      transition: .2s;
+      margin-bottom: 24px;
+      padding: 24px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .demo-block .block {
+      flex: 1;
+    }
+    .block.code {
+      padding: 20px;
+      background-color: #fafafa;
+      position: relative
+    }
+    .demo-block .block.code button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: none;
+      outline: none;
+      color: #fff;
+      background-color: #409eff;
+      padding: 5px 15px
+    }
+    th,td {
+      padding: 5px 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <p>引入 Sheetjs 的JS</p>
+  <div class="block code">
+    <code>&lt;script src="./xlsx.min.js"&gt;&lt;/script&gt;</code>
+  </div>
+  <div class="source">
+    <h3>Json 转 Excel</h3>
+    <div class="demo-block">
+      <div class="block">
+        <pre>[
+    {
+        "姓名": "张三",
+        "性别": "男",
+        "年龄": 18
+    },
+    {
+        "姓名": "李四",
+        "性别": "女",
+        "年龄": 19
+    },
+    {
+        "姓名": "王二麻",
+        "性别": "未知",
+        "年龄": 20
+    }
+]</pre>
+      </div>
+      <div class="block code">
+        <button onclick="eval(document.querySelector('#json2Sheet').innerText + ';json2Sheet()')">RUN</button>
+        <pre><code id="json2Sheet">/**
+ * JSON转换Excel
+ */
+function json2Sheet () {
+    let json = [
+        {
+            "姓名": "张三",
+            "性别": "男",
+            "年龄": 18
+        },
+        {
+            "姓名": "李四",
+            "性别": "女",
+            "年龄": 19
+        },
+        {
+            "姓名": "王二麻",
+            "性别": "未知",
+            "年龄": 20
+        }
+    ]
+
+    // 实例化一个工作簿
+    let book = XLSX.utils.book_new()
+
+    // 实例化一个Sheet
+    let sheet = XLSX.utils.json_to_sheet(json, {
+        header: ['姓名', '性别', '年龄']
+    })
+
+    // 将Sheet写入工作簿
+    XLSX.utils.book_append_sheet(book, sheet, 'Sheet1')
+
+    // 写入文件，直接触发浏览器的下载
+    XLSX.writeFile(book, 'json2Sheet.xlsx')
+}</code></pre>
+      </div>
+    </div>
+    <h3>Array 转 Excel</h3>
+    <div class="demo-block">
+      <div class="block">
+        <pre>[
+  ['姓名', '性别', '年龄'],
+  ['张三', '男', '18'],
+  ['李四', '女', '19'],
+  ['王二麻', '未知', '20']
+]</pre>
+      </div>
+      <div class="block code">
+        <button onclick="eval(document.querySelector('#array2Sheet').innerText + ';array2Sheet()')">RUN</button>
+        <pre><code id="array2Sheet">/**
+ * 数组转换Excel
+ */
+function array2Sheet () {
+    let data = [
+        ['姓名', '性别', '年龄'],
+        ['张三', '男', '18'],
+        ['李四', '女', '19'],
+        ['王二麻', '未知', '20']
+    ]
+
+    // 实例化一个工作簿
+    let book = XLSX.utils.book_new()
+
+    // 实例化一个Sheet
+    let sheet = XLSX.utils.aoa_to_sheet(data)
+
+    // 将Sheet写入工作簿
+    XLSX.utils.book_append_sheet(book, sheet, 'Sheet1')
+
+    // 写入文件，直接触发浏览器的下载
+    XLSX.writeFile(book, 'array2Sheet.xlsx')
+}</code></pre>
+      </div>
+    </div>
+    <h3>Table 转 Excel</h3>
+    <div class="demo-block">
+      <div class="block">
+        <p>如果只有一个表格，可以直接使用 table_to_book 来做，简单直接。@table2Sheet</p>
+        <p>同样，可以先使用 table_to_sheet，再使用 book_append_sheet 来做。@table2Sheet2</p>
+        <table id="table" cellpadding="0" cellspacing="0" border="1">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>年龄</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>张三</td>
+              <td>男</td>
+              <td>18</td>
+            </tr>
+            <tr>
+              <td>李四</td>
+              <td>女</td>
+              <td>19</td>
+            </tr>
+            <tr>
+              <td>王二麻</td>
+              <td>未知</td>
+              <td>20</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="block code">
+        <button onclick="eval(document.querySelector('#table2Sheet').innerText + ';table2Sheet()')">RUN</button>
+        <pre><code id="table2Sheet">/**
+ * table转换Excel
+ */
+function table2Sheet () {
+    let tableDom = document.querySelector('#table')
+
+    let book = XLSX.utils.table_to_book(tableDom)
+
+    // 写入文件，直接触发浏览器的下载
+    XLSX.writeFile(book, 'table2Sheet.xlsx')
+}
+
+/**
+ * table转换Excel
+ */
+function table2Sheet2 () {
+    let tableDom = document.querySelector('#table')
+
+    // 实例化一个工作簿
+    let book = XLSX.utils.book_new()
+
+    // 实例化一个Sheet
+    let sheet = XLSX.utils.table_to_sheet(tableDom)
+
+    // 将Sheet写入工作簿
+    XLSX.utils.book_append_sheet(book, sheet, 'Sheet1')
+
+    // 写入文件，直接触发浏览器的下载
+    XLSX.writeFile(book, 'table2Sheet.xlsx')
+}</code></pre>
+      </div>
+    </div>
+    <h3>多个Table 转 Excel</h3>
+    <div class="demo-block">
+      <div class="block">
+        <table id="table1" cellpadding="0" cellspacing="0" border="1">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>年龄</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>张三</td>
+              <td>男</td>
+              <td>18</td>
+            </tr>
+            <tr>
+              <td>李四</td>
+              <td>女</td>
+              <td>19</td>
+            </tr>
+            <tr>
+              <td>王二麻</td>
+              <td>未知</td>
+              <td>20</td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <table id="table2" cellpadding="0" cellspacing="0" border="1">
+          <thead>
+            <tr>
+              <th>名字</th>
+              <th>类别</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TOM</td>
+              <td>猫</td>
+            </tr>
+            <tr>
+              <td>大黄</td>
+              <td>狗</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="block code">
+        <button onclick="eval(document.querySelector('#table2SheetMulti').innerText + ';table2SheetMulti()')">RUN</button>
+        <pre><code id="table2SheetMulti">/**
+ * table转换Excel
+ */
+function table2SheetMulti () {
+    let tableDom1 = document.querySelector('#table1')
+    let tableDom2 = document.querySelector('#table2')
+
+    // 实例化一个工作簿
+    let book = XLSX.utils.book_new()
+
+    // 实例化一个Sheet
+    let sheet1 = XLSX.utils.table_to_sheet(tableDom1)
+    let sheet2 = XLSX.utils.table_to_sheet(tableDom2)
+
+    // 将Sheet写入工作簿
+    XLSX.utils.book_append_sheet(book, sheet1, 'Sheet1')
+    XLSX.utils.book_append_sheet(book, sheet2, 'Sheet2')
+
+    // 写入文件，直接触发浏览器的下载
+    XLSX.writeFile(book, 'table2SheetMulti.xlsx')
+}</code></pre>
+      </div>
+    </div>
+  </div>
+  <script src="./xlsx.min.js"></script>
+</body>
+</html>
